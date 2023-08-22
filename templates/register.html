@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register for Party</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/register.css') }}">
+</head>
+<body>
+<section class="ftco-section img bg-hero" style="background-image: url(/static/image/bg_1.jpg);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center mb-5">
+                <h2 class="heading-section">Đăng ký tham gia Việt-Úc Party 2023</h2>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-11">
+                <div class="wrapper">
+                    <div class="row no-gutters justify-content-between">
+                        <div class="col-lg-6 d-flex align-items-stretch">
+                            <div class="info-wrap w-100 p-5">
+                                <h3 class="mb-4">Việt-Úc Family Party 2023</h3>
+
+                                <div class="dbox w-100 d-flex align-items-start">
+                                    <div class="icon d-flex align-items-center justify-content-center">
+                                        <span class="fa fa-paper-plane"></span>
+                                    </div>
+                                    <div class="text pl-4">
+                                        <p><span>Giới thiệu:</span> Trân trọng kính mời anh chị em Viet Uc Family tham
+                                            dự buổi họp thường niên 2023 </p>
+                                    </div>
+                                </div>
+                                <div class="dbox w-100 d-flex align-items-start">
+                                    <div class="icon d-flex align-items-center justify-content-center">
+                                        <span class="fa fa-map-marker"></span>
+                                    </div>
+                                    <div class="text pl-4">
+                                        <p><span>Địa điểm:</span> Elegant Suites Westlake Serviced Residences, 10b, Đặng
+                                            Thai Mai, Quảng An, Tây Hồ, Hà Nội </p>
+                                    </div>
+                                </div>
+                                <div class="dbox w-100 d-flex align-items-start">
+                                    <div class="icon d-flex align-items-center justify-content-center">
+                                        <span class="fa fa-globe"></span>
+                                    </div>
+                                    <div class="text pl-4">
+                                        <p><span>Thời gian</span> <a href="#">17:30 ngày 8 tháng 10 năm 2022 ( chiều thứ
+                                            7 ) cần thay đổi</a></p>
+                                    </div>
+                                </div>
+                                <div class="dbox w-100 d-flex align-items-start">
+                                    <div class="icon d-flex align-items-center justify-content-center">
+                                        <span class="fa fa-phone"></span>
+                                    </div>
+                                    <div class="text pl-4">
+                                        <p><span>Số điện thoại:</span> <a href="tel://1234567920">+ 1235 2355 98</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="contact-wrap w-100 p-md-5 p-4">
+                                <h3 class="mb-4">Đơn đăng ký tham gia</h3>
+                                <div id="form-message-warning" class="mb-4"></div>
+                                <div id="form-message-success" class="mb-4">
+                                    Your message was sent, thank you!
+                                </div>
+                                <form method="POST" action="/register" id="registerForm" name="registerForm">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label>Họ và tên</label>
+                                                <input type="text" class="form-control" name="name" id="name"
+                                                       placeholder="Nhập họ và tên">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label>Số điện thoại:</label>
+                                                <input type="text" class="form-control" name="phone" id="phone"
+                                                       placeholder="Nhập số điện thoại">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                 <label>Quê quán:</label>
+                                                <input type="text" class="form-control" name="hometown" id="hometown"
+                                                       placeholder="Nhập quê quán">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                 <label>Địa chỉ:</label>
+                                                <input type="text" class="form-control" name="subject" id="address"
+                                                       placeholder="Nhập địa chỉ">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                 <label>Năm sinh:</label>
+                                                <input type="text" class="form-control" name="birdyear" id="birdyear"
+                                                       placeholder="Nhập năm sinh">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                 <label>Số lượng người cùng dự tiệc:</label>
+                                                <input type="number" class="form-control" name="num_attendees" id="num_attendees"
+                                                       placeholder="Nhập số lượng người tham gia cùng">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                             <input type="submit" value="Đăng ký" class="btn btn-primary">
+													<div class="submitting"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="{{url_for('static', filename='js/jquery.min.js')}}"></script>
+<script src="{{url_for('static', filename='js/popper.js')}}"></script>
+<script src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>
+<script src="{{url_for('static', filename='js/jquery.validate.min.js')}}"></script>
+<script src="{{url_for('static', filename='js/main.js')}}"></script>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Đăng ký thành công</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+               <img id="qr_img" src="data:image/png;base64,{{ qr_code_img }}" width="200px" height="200px" alt="QR Code">
+        </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

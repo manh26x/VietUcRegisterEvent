@@ -1,0 +1,28 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+db-sqlite3 = "*"
+flask-bootstrap = "*"
+bootstrap-flask = "*"
+django-qrcode = "*"
+qrcode = "*"
+flask-sqlalchemy = "*"
+flask-login = "*"
+google-oauth = "*"
+google-auth-oauthlib = "*"
+facebook-sdk = "*"
+pyzbar = "*"
+opencv-python = "*"
+bcrypt = "*"
+pyopenssl ="23.2.0"
+jupyter = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
+python_full_version = "3.7.9"
