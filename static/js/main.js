@@ -30,7 +30,7 @@
 				
 				submitHandler: function(form) {		
 					var $submit = $('.submitting'),
-						waitText = 'Submitting...';
+						waitText = 'Xin đợi...';
 
 					$.ajax({   	
 				      type: "POST",
@@ -44,6 +44,7 @@
 						  debugger
 						$("#qr_img").attr('src',"data:image/png;base64," + msg.qr_code);
 		               $('#myModal').modal('show');
+					   $submit.css('display', 'none');
 				      },
 				      error: function() {
 				      	$('#form-message-warning').html("Something went wrong. Please try again.");

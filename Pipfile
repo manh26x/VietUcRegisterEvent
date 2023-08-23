@@ -18,11 +18,10 @@ facebook-sdk = "*"
 pyzbar = "*"
 opencv-python = "*"
 bcrypt = "*"
-pyopenssl ="23.2.0"
 jupyter = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3.7"
-python_full_version = "3.7.9"
+python_full_version = "3.7.17"

@@ -4,19 +4,27 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 import os
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, session
-from flask_bootstrap import Bootstrap4
+from flask_bootstrap import Bootstrap
 import qrcode
 from io import BytesIO
 import hashlib
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
-bootstrap = Bootstrap4(app)
+bootstrap = Bootstrap(app)
 domain = "http://192.168.137.1:5000/"
 
 # Đường dẫn tới file database SQLite
 DATABASE = os.path.join(os.path.dirname(__file__), 'party.db')
 login_manager = LoginManager(app)
+
+# Cấu hình Flask để sử dụng email server
+app.config['MAIL_SERVER'] = 'mail.familyvietuc.com.vn'
+app.config['MAIL_PORT'] = 25
+app.config['MAIL_USERNAME'] = 'your_username'
+app.config['MAIL_PASSWORD'] = 'your_password'
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = False
 
 
 class User(UserMixin):
