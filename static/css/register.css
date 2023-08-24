@@ -8286,8 +8286,8 @@ textarea.form-control {
       border-color: #006fdc !important;
       background: #006fdc !important; }
 
-#contactForm .error {
-  color: red;
+.error {
+  color: red!important;
   font-size: 12px; }
 
 #contactForm .form-control {

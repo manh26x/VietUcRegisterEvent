@@ -1,5 +1,8 @@
 # file: app.py
 import base64
+import datetime
+import threading
+
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import os
 import sqlite3
@@ -8,23 +11,18 @@ from flask_bootstrap import Bootstrap
 import qrcode
 from io import BytesIO
 import hashlib
+import sys
+
+from sendmail.sendmail import send_mail
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
 bootstrap = Bootstrap(app)
-domain = "http://192.168.137.1:5000/"
+domain = "https://localhost:5000/"
 
 # Đường dẫn tới file database SQLite
 DATABASE = os.path.join(os.path.dirname(__file__), 'party.db')
 login_manager = LoginManager(app)
-
-# Cấu hình Flask để sử dụng email server
-app.config['MAIL_SERVER'] = 'mail.familyvietuc.com.vn'
-app.config['MAIL_PORT'] = 25
-app.config['MAIL_USERNAME'] = 'your_username'
-app.config['MAIL_PASSWORD'] = 'your_password'
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = False
 
 
 class User(UserMixin):
@@ -55,7 +53,15 @@ def connect_db():
 def create_table():
     with connect_db() as conn:
         conn.execute(
-            'CREATE TABLE IF NOT EXISTS participants (id INTEGER PRIMARY KEY, name TEXT, age INTEGER, hometown TEXT, num_attendees INTEGER, hashed_data TEXT)')
+            '''CREATE TABLE IF NOT EXISTS participants (
+            id INTEGER PRIMARY KEY, 
+            name TEXT, 
+            hometown TEXT, 
+            num_attendees INTEGER, 
+            email TEXT,
+            phone TEXT,
+            birthdate TEXT,
+            hashed_data TEXT)''')
 
 
 create_table()
@@ -75,7 +81,7 @@ def generate_qr_code(hashed_str):
         box_size=10,
         border=4,
     )
-    qr.add_data(domain + "qr_check/" + hashed_str)
+    qr.add_data(hashed_str)
     qr.make(fit=True)
     img = qr.make_image(fill_color="black", back_color="white")
 
@@ -106,26 +112,45 @@ def register():
         name = request.form['name']
         hometown = request.form['hometown']
         num_attendees = request.form['num_attendees']
-        qr_data = f"Name: {name}, Hometown: {hometown}, Number of Attendees: {num_attendees}"
+        qr_data = f"{name}-{datetime.datetime.now()}-{app.secret_key}"
+        birthdate = request.form['birdyear']
+        email = request.form['email']
+        phone = request.form['phone']
         hashed_data = hash_data(qr_data)
 
         with connect_db() as conn:
             conn.execute(
-                'INSERT INTO participants (name, age, hometown, num_attendees, hashed_data) VALUES (?, ?, ?, ?, ?)',
-                (name, 0, hometown, num_attendees, hashed_data))
+                '''INSERT INTO participants (
+                name, 
+                birthdate, 
+                hometown, 
+                num_attendees, 
+                hashed_data,
+                email,
+                phone
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)''',
+                (name, birthdate, hometown, num_attendees, hashed_data, email, phone))
             conn.commit()
+
+        try:
+            send_mail_thread = threading.Thread(target=send_mail, args=[email, domain + "/qr_code?hashed=" + hashed_data, name])
+            send_mail_thread.start()
+
+        except:
+            print(email + "can't send !")
 
         # Tạo thông tin QR Code từ thông tin đăng ký
         qr_code = generate_qr_code(hashed_data)
         qr_code_buffer = BytesIO()
         qr_code.save(qr_code_buffer, kind='PNG')
         qr_code_buffer.seek(0)
+
         return {'qr_code': base64.b64encode(qr_code_buffer.getvalue()).decode()}
 
     return render_template('register.html')
 
 
-@app.route('/qr_check/<hashed_data>', methods=['GET'])
+@app.route('/qr_code/<hashed_data>', methods=['GET'])
 @login_required
 def checkin(hashed_data):
     with connect_db() as conn:
@@ -159,6 +184,16 @@ def statistics():
     return render_template('statistics.html', participants=participants)
 
 
+@app.route('/qr_code')
+def get_qr():
+    hashed_data=request.args.get('hashed')
+    qr_code = generate_qr_code(hashed_data)
+    qr_code_buffer = BytesIO()
+    qr_code.save(qr_code_buffer, kind='PNG')
+    qr_code_buffer.seek(0)
+    return render_template('qr_code.html', qr_code_img=base64.b64encode(qr_code_buffer.getvalue()).decode())
+
+
 @app.route('/scan')
 def index():
     return render_template('scan_qr.html')
@@ -171,4 +206,5 @@ def scan_qr_code():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0',  ssl_context=('crt.pem', 'private_key.pem'))
+    print(os.environ.get('domain'))
+    app.run(debug=True, host='0.0.0.0', ssl_context=('crt.pem', 'private_key.pem'))
