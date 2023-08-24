@@ -2,7 +2,6 @@
 
     "use strict";
 
-
     // Form
     var registerForm = function () {
         if ($('#registerForm').length > 0) {
@@ -42,14 +41,18 @@
                         success: function (msg) {
                             debugger
                             $("#qr_img").attr('src', "data:image/png;base64," + msg.qr_code);
-                            $('#down_img').attr('href', "data:image/png;base64," + msg.qr_code)
+                            $('#down_img').attr('href', "data:image/png;base64," + msg.qr_code);
+                           localStorage.setItem('registered', 'true');
+                            localStorage.setItem('qr_code', msg.qr_code);
                             $('#myModal').modal('show');
                             $submit.css('display', 'none');
+
                         },
                         error: function () {
                             $('#form-message-warning').html("Something went wrong. Please try again.");
                             $('#form-message-warning').fadeIn();
                             $submit.css('display', 'none');
+                            $(localStorage).set('registered', false);
                         }
                     });
                 } // end submitHandler
@@ -58,11 +61,20 @@
         }
     };
     registerForm();
+$(document).ready(() => {
+debugger
+   if(localStorage.getItem('registered') === 'true') {
+       $("#qr_img").attr('src', "data:image/png;base64," + localStorage.getItem('qr_code'));
+    $('#down_img').attr('href', "data:image/png;base64," + localStorage.getItem('qr_code'));
+           $('#myModal').modal('show');
 
+   }
+});
 
 })(jQuery);
 
 function clodeModal() {
     $('#myModal').modal('hide')
 }
+
 

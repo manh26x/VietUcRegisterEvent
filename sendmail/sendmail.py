@@ -5,10 +5,10 @@ def send_mail(mail, link, name):
     if mail is None or mail == '':
         return
 
-    server = smtplib.SMTP('smtp.office365.com', 587)
+    server = smtplib.SMTP('smtp.email.com', 465)
     server.starttls()
 
-    server.login('no_reply_vietucfamily@outlook.com', 'VietUc@2023')
+    server.login('no_reply_vietucfamily@email.com', 'VietUc@2023')
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
 
@@ -42,5 +42,5 @@ def send_mail(mail, link, name):
     msg.attach(part1)
     msg.attach(part2)
 
-    server.sendmail('no_reply_vietucfamily@outlook.com', mail, msg.as_string())
+    server.sendmail('no_reply_vietucfamily@email.com', mail, msg.as_string())
     server.quit()

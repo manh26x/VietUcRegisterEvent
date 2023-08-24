@@ -6,8 +6,7 @@ import threading
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import os
 import sqlite3
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, session
-from flask_bootstrap import Bootstrap
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, session, send_file
 import qrcode
 from io import BytesIO
 import hashlib
@@ -17,7 +16,6 @@ from sendmail.sendmail import send_mail
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
-bootstrap = Bootstrap(app)
 domain = "https://localhost:5000/"
 
 # Đường dẫn tới file database SQLite
@@ -133,7 +131,8 @@ def register():
             conn.commit()
 
         try:
-            send_mail_thread = threading.Thread(target=send_mail, args=[email, domain + "/qr_code?hashed=" + hashed_data, name])
+            send_mail_thread = threading.Thread(target=send_mail,
+                                                args=[email, domain + "/qr_code?hashed=" + hashed_data, name])
             send_mail_thread.start()
 
         except:
@@ -186,7 +185,7 @@ def statistics():
 
 @app.route('/qr_code')
 def get_qr():
-    hashed_data=request.args.get('hashed')
+    hashed_data = request.args.get('hashed')
     qr_code = generate_qr_code(hashed_data)
     qr_code_buffer = BytesIO()
     qr_code.save(qr_code_buffer, kind='PNG')
