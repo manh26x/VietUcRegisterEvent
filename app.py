@@ -1,18 +1,16 @@
 # file: app.py
 import base64
 import datetime
+import json
 import threading
 
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_login import LoginManager, UserMixin, login_user, login_required, current_user
 import os
 import sqlite3
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, session, send_file
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import qrcode
 from io import BytesIO
 import hashlib
-import sys
-
-from sendmail.sendmail import send_mail
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
@@ -59,7 +57,9 @@ def create_table():
             email TEXT,
             phone TEXT,
             birthdate TEXT,
-            hashed_data TEXT)''')
+            hashed_data TEXT,
+            time_checkin TEXT,
+            num_checkin INTEGER)''')
 
 
 create_table()
@@ -130,21 +130,13 @@ def register():
                 (name, birthdate, hometown, num_attendees, hashed_data, email, phone))
             conn.commit()
 
-        try:
-            send_mail_thread = threading.Thread(target=send_mail,
-                                                args=[email, domain + "/qr_code?hashed=" + hashed_data, name])
-            send_mail_thread.start()
-
-        except:
-            print(email + "can't send !")
-
         # Tạo thông tin QR Code từ thông tin đăng ký
         qr_code = generate_qr_code(hashed_data)
         qr_code_buffer = BytesIO()
         qr_code.save(qr_code_buffer, kind='PNG')
         qr_code_buffer.seek(0)
 
-        return {'qr_code': base64.b64encode(qr_code_buffer.getvalue()).decode()}
+        return {'qr_code': base64.b64encode(qr_code_buffer.getvalue()).decode(), 'hashed_data': hashed_data}
 
     return render_template('register.html')
 
@@ -179,18 +171,34 @@ def statistics():
     with connect_db() as conn:
         cur = conn.cursor()
         cur.execute('SELECT * FROM participants')
-        participants = cur.fetchall()
-    return render_template('statistics.html', participants=participants)
+        r = [dict((cur.description[i][0], value) \
+                  for i, value in enumerate(row)) for row in cur.fetchall()]
+    result = {'total': len(r), 'totalNotFiltered': len(r), 'rows': r}
+    sum_attendees = 0
+    for p in r:
+        sum_attendees += p['num_attendees']
+
+    print(sum_attendees)
+    return render_template('statistics.html', participants=result, sum_attendees=sum_attendees)
 
 
-@app.route('/qr_code')
-def get_qr():
-    hashed_data = request.args.get('hashed')
-    qr_code = generate_qr_code(hashed_data)
-    qr_code_buffer = BytesIO()
-    qr_code.save(qr_code_buffer, kind='PNG')
-    qr_code_buffer.seek(0)
-    return render_template('qr_code.html', qr_code_img=base64.b64encode(qr_code_buffer.getvalue()).decode())
+@app.route('/api/cancel/register/<hashed_data>', methods=["DELETE"])
+def cancel_register(hashed_data):
+    with connect_db() as conn:
+        cursor = conn.cursor()
+
+        cursor.execute("DELETE FROM participants WHERE hashed_data=?", (hashed_data,))
+    return render_template('register.html')
+
+
+@app.route('/api/cancel/registers', methods=["DELETE"])
+def cancel_registers():
+    with connect_db() as conn:
+        cursor = conn.cursor()
+        hashed_data = json.loads(request.args.get('hashed_data'))
+        query = f"DELETE FROM participants WHERE hashed_data in ({','.join(['?'] * len(hashed_data))})"
+        cursor.execute(query, hashed_data)
+    return render_template('register.html')
 
 
 @app.route('/scan')

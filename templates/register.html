@@ -176,12 +176,13 @@
           <div >
                <img id="qr_img" src="data:image/png;base64,{{ qr_code_img }}" width="200px" height="200px" alt="QR Code">
           <p></p>
-          <p>Cảm ơn bạn đã đăng ký tham gia chương trình Viet Uc party 2023, Xin hãy lưu lại mã QR để thực hiện checkin (Mã QR cũng đã được gửi đến email của bạn)</p>
+          <p>Cảm ơn bạn đã đăng ký tham gia chương trình Viet Uc party 2023, Xin hãy lưu lại mã QR để thực hiện checkin (Để nhận mã QR chỉ cần truy cập vào đường link vào đúng trình duyệt (thiết bị) đã dùng</p>
            <canvas id="canvas" style="display: none;"></canvas>
               </div>
         </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="cancelRegister()">Hủy (đăng ký lại)</button>
           <button type="button" class="btn btn-success" onclick="downloadImage()">Lưu lại</button>
       </div>
     </div>
