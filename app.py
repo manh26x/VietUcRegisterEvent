@@ -201,8 +201,10 @@ def cancel_registers():
     return render_template('register.html')
 
 
-@app.route('/scan')
+@app.route('/scan', methods=['GET', 'POST'])
 def index():
+    if request.method == 'POST':
+        print(request.data)
     return render_template('scan_qr.html')
 
 

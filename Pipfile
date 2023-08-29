@@ -4,21 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "*"
 db-sqlite3 = "*"
-flask-bootstrap = "*"
-bootstrap-flask = "*"
-django-qrcode = "*"
 qrcode = "*"
 flask-sqlalchemy = "*"
-flask-login = "*"
-google-oauth = "*"
-google-auth-oauthlib = "*"
-facebook-sdk = "*"
 pyzbar = "*"
-opencv-python = "*"
 bcrypt = "*"
-jupyter = "*"
 
 [dev-packages]
 
