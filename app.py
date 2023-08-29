@@ -178,7 +178,6 @@ def statistics():
     for p in r:
         sum_attendees += p['num_attendees']
 
-    print(sum_attendees)
     return render_template('statistics.html', participants=result, sum_attendees=sum_attendees)
 
 
@@ -205,6 +204,9 @@ def cancel_registers():
 def index():
     if request.method == 'POST':
         print(request.data)
+
+    info = {'name': 'Mike', 'num_attendees': 3}
+    return render_template('scan_qr.html', checkin_info=info)
     return render_template('scan_qr.html')
 
 
