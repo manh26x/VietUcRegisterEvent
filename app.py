@@ -218,4 +218,4 @@ def scan_qr_code():
 
 if __name__ == '__main__':
     print(os.environ.get('domain'))
-    app.run(debug=True, host='0.0.0.0', ssl_context=('crt.pem', 'private_key.pem'))
+    app.run(debug=True, host='0.0.0.0', ssl_context=('chain.crt', 'private_key.pem'))

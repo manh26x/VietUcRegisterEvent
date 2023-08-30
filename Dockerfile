@@ -1,17 +1,17 @@
-# Sử dụng một hình ảnh cơ sở Python
+# Sử dụng một hình ảnh Python chứa Flask
 FROM python:3.7.9
 
-# Đặt thư mục làm việc mặc định trong container
+# Sao chép mã nguồn ứng dụng vào thư mục /app trong container
+COPY . /app
+
+# Thiết lập thư mục làm việc
 WORKDIR /app
 
-# Sao chép tất cả các tệp yêu cầu (requirements.txt) vào thư mục /app
-COPY requirements.txt .
-
-# Cài đặt các gói phụ thuộc từ requirements.txt
+# Cài đặt các thư viện Python cần thiết
 RUN pip install -r requirements.txt
 
-# Sao chép tất cả các tệp từ thư mục hiện tại vào thư mục /app trong container
-COPY . .
+# Expose cổng 80 để sử dụng HTTP
+EXPOSE 5000
 
-# Chạy ứng dụng Flask khi container được khởi chạy
+# Chạy ứng dụng Flask
 CMD ["python", "app.py"]

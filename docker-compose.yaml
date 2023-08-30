@@ -1,0 +1,16 @@
+version: '3'
+services:
+  flask-app:
+    build: .
+    ports:
+      - "5000:5000"
+    # Thêm các cài đặt khác của ứng dụng Flask tại đây
+
+  proxy:
+    image: nginx
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    # Thêm cài đặt cấu hình nginx.conf tại đây
