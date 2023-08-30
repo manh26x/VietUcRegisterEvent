@@ -3,7 +3,7 @@
     "use strict";
 
     // Form
-    var registerForm = function () {
+    const registerForm = function () {
         if ($('#registerForm').length > 0) {
             $("#registerForm").validate({
                 rules: {

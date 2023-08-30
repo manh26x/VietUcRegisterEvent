@@ -3,7 +3,13 @@
 <head>
     <title>QR Code Scanner</title>
     <meta name="viewport" content="width=device-width; initial-scale=1.0;">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.2/css/bootstrap.min.css">
     <script type="text/javascript" src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+    <script src="{{url_for('static', filename='js/jquery.min.js')}}"></script>
+    <script src="{{url_for('static', filename='js/popper.js')}}"></script>
+    <script src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>
+    <script src="{{url_for('static', filename='js/jquery.validate.min.js')}}"></script>
+    <script src="{{url_for('static', filename='js/main.js')}}"></script>
 </head>
 <body>
     <h1>QR Code Scanner</h1>
@@ -17,14 +23,14 @@
             fetch('/scan', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 'data': content })
-            })
-            .then(response => response.json())
+                body: content
+            }).then(res => res.json())
             .then(data => {
-                const resultDiv = document.getElementById('result');
-                resultDiv.textContent = `Scanned data: ${data.data}`;
+                $('#modalCheckin').modal('show');
+                $('#checkinInfo').html('Anh chị: ' + data.name + '<br> Số người đăng ký tham gia: ' + data.num_attendees);
+                $('#hashedValue').val(data.hashed_data);
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => alert('Error:'+error));
         });
 
         Instascan.Camera.getCameras().then(function (cameras) {
@@ -39,5 +45,33 @@
             console.error('Error:', error);
         });
     </script>
+
+<div class="modal fade" id="modalCheckin" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title" id="exampleModalLabel">Checkin</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="/checkin" method="post">
+        <div class="modal-body">
+          <p id="checkinInfo"></p>
+
+          <div class="form-group">
+            <label for="numCheckin">Số người tham gia:</label>
+            <input type="number" class="form-control" id="numCheckin" name="numCheckin" placeholder="Nhập số người tham gia" required/>
+          </div>
+            <label for="hashedValue"></label><input id="hashedValue" style="display: none" type="text" name="hashedValue">
+
+        </div>
+        <div class="modal-footer border-top-0 d-flex justify-content-center">
+          <button type="submit" class="btn btn-success">Xác nhận</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 </body>
 </html>

@@ -95,7 +95,7 @@ def login():
         if username == admin_user.username and password == admin_user.password:
             login_user(admin_user)
             next_page = request.args.get('next')
-            return redirect(next_page or url_for("checkin"))
+            return redirect(next_page or url_for("scan"))
         else:
             error_message = "Invalid username or password"
             return render_template('login.html', error_message=error_message)
@@ -141,28 +141,28 @@ def register():
     return render_template('register.html')
 
 
-@app.route('/qr_code/<hashed_data>', methods=['GET'])
-@login_required
-def checkin(hashed_data):
-    with connect_db() as conn:
-        cursor = conn.cursor()
+# @app.route('/qr_code/<hashed_data>', methods=['GET'])
+# @login_required
+# def checkin(hashed_data):
+#     with connect_db() as conn:
+#         cursor = conn.cursor()
+#
+#         cursor.execute("SELECT * FROM participants WHERE hashed_data=?", (hashed_data,))
+#         data = cursor.fetchone()
+#
+#         if data:
+#             # Dữ liệu tồn tại, bạn có thể trả về nó cho template checkin.html
+#             return render_template('checkin.html', data=data)
+#         else:
+#             # Dữ liệu không tồn tại, bạn có thể xử lý theo ý muốn, ví dụ: trả về thông báo lỗi
+#             return render_template('error.html', message='Dữ liệu không tồn tại')
 
-        cursor.execute("SELECT * FROM participants WHERE hashed_data=?", (hashed_data,))
-        data = cursor.fetchone()
 
-        if data:
-            # Dữ liệu tồn tại, bạn có thể trả về nó cho template checkin.html
-            return render_template('checkin.html', data=data)
-        else:
-            # Dữ liệu không tồn tại, bạn có thể xử lý theo ý muốn, ví dụ: trả về thông báo lỗi
-            return render_template('error.html', message='Dữ liệu không tồn tại')
-
-
-@app.before_request
-def require_login():
-    # Kiểm tra nếu route bắt đầu bằng 'qr_check/' và người dùng chưa đăng nhập
-    if request.endpoint and request.endpoint.startswith('checkin') and not current_user.is_authenticated:
-        return redirect(url_for('login', next=request.url))  # Redirect đến trang đăng nhập
+# @app.before_request
+# def require_login():
+#     # Kiểm tra nếu route bắt đầu bằng 'qr_check/' và người dùng chưa đăng nhập
+#     if request.endpoint and request.endpoint.startswith('checkin') and not current_user.is_authenticated:
+#         return redirect(url_for('login', next=request.url))  # Redirect đến trang đăng nhập
 
 
 # Trang thống kê
@@ -200,20 +200,36 @@ def cancel_registers():
     return render_template('register.html')
 
 
-@app.route('/scan', methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
-        print(request.data)
+@app.route('/checkin', methods=['POST'])
+def checkin():
+    num_checkin = request.form.get('numCheckin')
+    hashed_data = request.form.get('hashedValue')
+    with connect_db() as conn:
+        conn.execute(
+            'UPDATE participants SET num_checkin = ?, time_checkin=? WHERE hashed_data = ?', (num_checkin, datetime.datetime.now(), hashed_data))
+    return render_template('scan_qr.html', checkin_success='true')
 
-    info = {'name': 'Mike', 'num_attendees': 3}
-    return render_template('scan_qr.html', checkin_info=info)
+
+@app.route('/scan', methods=['GET'])
+def index():
+
     return render_template('scan_qr.html')
 
 
 @app.route('/scan', methods=['POST'])
 def scan_qr_code():
-    data = request.get_json()['data']
-    return jsonify({'data': data})
+    hashed_data = request.data.decode('ascii')
+    with connect_db() as conn:
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM participants WHERE hashed_data=?", (hashed_data,))
+        columns = [column[0] for column in cursor.description]
+        data = dict(zip(columns, cursor.fetchone()))
+        print(data)
+        if data:
+            # Dữ liệu tồn tại, bạn có thể trả về nó cho template checkin.html
+            return data
+    return {'error': 'error'}
 
 
 if __name__ == '__main__':
